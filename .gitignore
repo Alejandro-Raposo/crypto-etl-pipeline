@@ -1,1 +1,34 @@
+# Variables de entorno y credenciales
 .env
+*.json
+!requirements.txt
+!*.json.example
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Datos locales
+data/raw/*.json
+data/processed/*.parquet
+ml_pipeline.log
+*.log
+
+# Archivos temporales
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+Thumbs.db

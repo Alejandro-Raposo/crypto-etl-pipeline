@@ -30,13 +30,21 @@ client = bigquery.Client.from_service_account_json(credentials_path)
 # ------------------------------
 RAW_DIR = Path(__file__).parent.parent / "data/raw"
 latest_file = max(RAW_DIR.glob("coins_*.json"), key=os.path.getctime)
-print(f"📂 Loading data from: {latest_file}")
+print(f"Loading data from: {latest_file}")
 
 with open(latest_file, "r", encoding="utf-8") as f:
-    data = json.load(f)
+    raw_data = json.load(f)
+
+# Manejar nueva estructura con metadatos
+if isinstance(raw_data, dict) and "data" in raw_data:
+    data = raw_data["data"]
+    print("Found structured data with metadata")
+else:
+    data = raw_data
+    print("Found legacy data format")
 
 df = pd.DataFrame(data)
-print(f"✅ DataFrame loaded with {df.shape[0]} rows and {df.shape[1]} columns")
+print(f"DataFrame loaded with {df.shape[0]} rows and {df.shape[1]} columns")
 
 # Optional: Add ingestion timestamp
 df["ingestion_time"] = pd.Timestamp.utcnow()
@@ -62,4 +70,4 @@ job = client.load_table_from_dataframe(
 )
 job.result()  # wait for the job to finish
 
-print(f"✅ Uploaded {job.output_rows} rows to {table_ref}")
+print(f"Uploaded {job.output_rows} rows to {table_ref}")

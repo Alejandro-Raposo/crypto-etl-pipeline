@@ -55,9 +55,32 @@ def load_to_bq():
     
     table_ref = client.dataset(DATASET).table(TABLE)
     
-    job = client.load_table_from_dataframe(df, table_ref, job_config=bigquery.LoadJobConfig(write_disposition="WRITE_APPEND"))
-    job.result()  
-    print(f"Loaded {len(df)} rows to {PROJECT}.{DATASET}.{TABLE}")
+    # Configuración de carga más flexible para ML
+    job_config = bigquery.LoadJobConfig(
+        write_disposition="WRITE_APPEND",
+        autodetect=True,  # Detectar schema automáticamente
+        source_format=bigquery.SourceFormat.PARQUET
+    )
+    
+    # Intentar cargar, y si falla, crear tabla nueva con sufijo ML
+    try:
+        job = client.load_table_from_dataframe(df, table_ref, job_config=job_config)
+        job.result()  
+        print(f"Loaded {len(df)} rows to {PROJECT}.{DATASET}.{TABLE}")
+    except Exception as e:
+        print(f"Error loading to existing table: {e}")
+        print("Creating new ML-ready table...")
+        
+        # Crear tabla nueva con sufijo _ml
+        ml_table = f"{TABLE}_ml"
+        ml_table_ref = client.dataset(DATASET).table(ml_table)
+        
+        job_config.write_disposition = "WRITE_TRUNCATE"  # Sobrescribir si existe
+        job = client.load_table_from_dataframe(df, ml_table_ref, job_config=job_config)
+        job.result()
+        
+        print(f"Loaded {len(df)} rows to {PROJECT}.{DATASET}.{ml_table}")
+        print(f"New ML table created: {ml_table}")
 
 # ------------------------------
 if __name__ == "__main__":
