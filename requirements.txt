@@ -1,0 +1,9 @@
+requests
+pandas
+pyarrow
+google-cloud-bigquery      
+pandas-gbq                
+sqlalchemy                
+psycopg2-binary            
+python-dateutil
+python-dotenv       
