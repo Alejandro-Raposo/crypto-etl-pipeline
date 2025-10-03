@@ -25,13 +25,23 @@ jobs:
           pip install -r requirements.txt
           echo "Dependencies installed successfully"
       
+      - name: Debug secret
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        run: |
+          echo "Secret length: ${#GCP_CREDENTIALS}"
+          echo "First 50 chars: ${GCP_CREDENTIALS:0:50}"
+          echo "Secret exists: $([ -n "$GCP_CREDENTIALS" ] && echo 'YES' || echo 'NO')"
+      
       - name: Create credentials file
         env:
           GCP_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         run: |
-          python -c "import os, json; open('/tmp/gcp_credentials.json', 'w').write(os.environ['GCP_CREDENTIALS'])"
+          echo "$GCP_CREDENTIALS" > /tmp/gcp_credentials.json
           echo "Credentials file created"
           ls -lh /tmp/gcp_credentials.json
+          echo "File size: $(wc -c < /tmp/gcp_credentials.json) bytes"
+          echo "First line: $(head -n 1 /tmp/gcp_credentials.json)"
       
       - name: Validate credentials JSON
         run: |
