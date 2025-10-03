@@ -26,22 +26,16 @@ jobs:
           fi
       
       - name: Create credentials file
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         run: |
-          cat << 'EOF' > /tmp/gcp_credentials.json
-          ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          EOF
+          python3 -c "import os, json; open('/tmp/gcp_credentials.json', 'w').write(os.environ['GCP_CREDENTIALS'])"
           echo "Archivo creado"
           ls -lh /tmp/gcp_credentials.json
       
       - name: Validate JSON
         run: |
-          python3 -m json.tool /tmp/gcp_credentials.json > /dev/null
-          if [ $? -eq 0 ]; then
-            echo "OK: JSON valido"
-          else
-            echo "ERROR: JSON invalido"
-            exit 1
-          fi
+          python3 -c "import json; data = json.load(open('/tmp/gcp_credentials.json')); print('OK: JSON valido con', len(data), 'campos')"
       
       - name: Install dependencies
         run: |

@@ -26,16 +26,16 @@ jobs:
           echo "Dependencies installed successfully"
       
       - name: Create credentials file
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         run: |
-          cat << 'EOF' > /tmp/gcp_credentials.json
-          ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          EOF
+          python -c "import os, json; open('/tmp/gcp_credentials.json', 'w').write(os.environ['GCP_CREDENTIALS'])"
           echo "Credentials file created"
           ls -lh /tmp/gcp_credentials.json
       
       - name: Validate credentials JSON
         run: |
-          python -m json.tool /tmp/gcp_credentials.json > /dev/null
+          python -c "import json; json.load(open('/tmp/gcp_credentials.json'))"
           echo "Credentials JSON is valid"
       
       - name: Set environment variables
