@@ -1,0 +1,66 @@
+name: Automated Crypto ETL Pipeline
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  run_etl_pipeline:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Create credentials file
+        run: |
+          echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > /tmp/gcp_credentials.json
+      
+      - name: Set environment variables
+        run: |
+          echo "ETL_SERVICE_ACOUNT_CREDENTIALS_ROUTE=/tmp/gcp_credentials.json" >> $GITHUB_ENV
+      
+      - name: Run extraction
+        run: python scripts/extract.py
+      
+      - name: Run transformation
+        run: python scripts/transform.py
+      
+      - name: Load to historical table
+        run: python scripts/load_historical.py
+      
+      - name: Generate temporal features
+        run: python scripts/feature_engineering_temporal.py
+      
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-data-${{ github.run_number }}
+          path: |
+            data/raw/*.json
+            data/processed/*.parquet
+          retention-days: 7
+      
+      - name: Notify on success
+        if: success()
+        run: echo "Pipeline completed successfully at $(date)"
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Pipeline failed at $(date)"
+          exit 1
+
