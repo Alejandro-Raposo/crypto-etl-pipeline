@@ -1,0 +1,3 @@
+# Esta carpeta almacena temporalmente los datos raw extraídos de la API
+# Los archivos JSON no se versionan (ver .gitignore)
+

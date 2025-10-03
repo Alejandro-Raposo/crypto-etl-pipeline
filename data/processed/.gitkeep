@@ -1,0 +1,3 @@
+# Esta carpeta almacena temporalmente los datos procesados
+# Los archivos Parquet no se versionan (ver .gitignore)
+
