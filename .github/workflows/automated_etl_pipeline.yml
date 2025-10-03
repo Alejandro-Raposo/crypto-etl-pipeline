@@ -27,7 +27,9 @@ jobs:
       
       - name: Create credentials file
         run: |
-          echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > /tmp/gcp_credentials.json
+          cat << 'EOF' > /tmp/gcp_credentials.json
+          ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          EOF
           echo "Credentials file created"
           ls -lh /tmp/gcp_credentials.json
       
