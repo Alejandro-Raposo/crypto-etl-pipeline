@@ -25,14 +25,6 @@ jobs:
           pip install -r requirements.txt
           echo "Dependencies installed successfully"
       
-      - name: Debug secret
-        env:
-          GCP_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        run: |
-          echo "Secret length: ${#GCP_CREDENTIALS}"
-          echo "First 50 chars: ${GCP_CREDENTIALS:0:50}"
-          echo "Secret exists: $([ -n "$GCP_CREDENTIALS" ] && echo 'YES' || echo 'NO')"
-      
       - name: Create credentials file
         env:
           GCP_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
