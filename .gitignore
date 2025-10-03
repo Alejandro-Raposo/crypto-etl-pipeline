@@ -1,34 +1,42 @@
-# Variables de entorno y credenciales
-.env
-*.json
-!requirements.txt
-!*.json.example
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 
-# Entornos virtuales
+# Virtual Environment
 venv/
 env/
-.venv/
-
-# Datos locales
-data/raw/*.json
-data/processed/*.parquet
-ml_pipeline.log
-*.log
-
-# Archivos temporales
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
+ENV/
+.venv
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# Sistema
+# Data
+data/raw/*.json
+data/processed/*.parquet
+*.log
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Environment variables
+.env
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
