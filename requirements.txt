@@ -5,7 +5,6 @@ google-cloud-bigquery>=3.38.0
 pandas-gbq>=0.29.0
 db-dtypes>=1.4.0
 sqlalchemy>=2.0.0
-psycopg2-binary>=2.9.0
 python-dateutil>=2.9.0
 python-dotenv>=1.1.0
 numpy>=2.3.0       

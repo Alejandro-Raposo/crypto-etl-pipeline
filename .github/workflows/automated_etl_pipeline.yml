@@ -23,26 +23,49 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          echo "Dependencies installed successfully"
       
       - name: Create credentials file
         run: |
           echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > /tmp/gcp_credentials.json
+          echo "Credentials file created"
+          ls -lh /tmp/gcp_credentials.json
+      
+      - name: Validate credentials JSON
+        run: |
+          python -m json.tool /tmp/gcp_credentials.json > /dev/null
+          echo "Credentials JSON is valid"
       
       - name: Set environment variables
         run: |
           echo "ETL_SERVICE_ACOUNT_CREDENTIALS_ROUTE=/tmp/gcp_credentials.json" >> $GITHUB_ENV
+          echo "Environment variable set"
       
       - name: Run extraction
-        run: python scripts/extract.py
+        run: |
+          echo "Starting extraction..."
+          python scripts/extract.py
+          echo "Extraction completed"
+          ls -lh data/raw/
       
       - name: Run transformation
-        run: python scripts/transform.py
+        run: |
+          echo "Starting transformation..."
+          python scripts/transform.py
+          echo "Transformation completed"
+          ls -lh data/processed/
       
       - name: Load to historical table
-        run: python scripts/load_historical.py
+        run: |
+          echo "Starting load to BigQuery..."
+          python scripts/load_historical.py
+          echo "Load completed"
       
       - name: Generate temporal features
-        run: python scripts/feature_engineering_temporal.py
+        run: |
+          echo "Starting feature engineering..."
+          python scripts/feature_engineering_temporal.py
+          echo "Feature engineering completed"
       
       - name: Upload artifacts
         if: always()
