@@ -1,0 +1,3 @@
+# Esta carpeta almacena los modelos entrenados (.pkl)
+# Los archivos .pkl no se versionan (ver .gitignore)
+

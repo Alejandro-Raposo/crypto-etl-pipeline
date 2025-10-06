@@ -23,6 +23,9 @@ data/raw/*.json
 data/processed/*.parquet
 *.log
 
+# Models
+models/*.pkl
+
 # OS
 .DS_Store
 Thumbs.db
