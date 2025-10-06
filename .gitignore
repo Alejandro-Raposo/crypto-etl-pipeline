@@ -26,6 +26,9 @@ data/processed/*.parquet
 # Models
 models/*.pkl
 
+# Visualizations
+visualizations/*.png
+
 # OS
 .DS_Store
 Thumbs.db

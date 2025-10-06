@@ -56,9 +56,10 @@ def normalize_features(features):
     Returns:
         DataFrame normalizado
     """
+    features_clean = features.fillna(features.mean())
     scaler = MinMaxScaler()
     normalized = pd.DataFrame(
-        scaler.fit_transform(features),
+        scaler.fit_transform(features_clean),
         columns=features.columns,
         index=features.index
     )
