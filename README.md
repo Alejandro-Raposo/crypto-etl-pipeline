@@ -8,7 +8,7 @@ Pipeline ETL automatizado que extrae datos de criptomonedas desde CoinGecko API,
 
 Sistema completo de **ETL + Machine Learning** para análisis y predicción de precios de criptomonedas:
 
-- **ETL Pipeline:** Extrae, transforma y carga datos cada 6 horas (GitHub Actions)
+- **ETL Pipeline:** Extrae, transforma y carga datos **cada hora** (GitHub Actions)
 - **Acumulación Histórica:** Almacena datos con UPSERT logic para evitar duplicados
 - **Feature Engineering Temporal:** Genera 86+ features (lags, rolling stats, RSI, momentum)
 - **ML Predictor:** Modelo Random Forest que predice dirección de precio (UP/DOWN)
@@ -33,7 +33,7 @@ Sistema completo de **ETL + Machine Learning** para análisis y predicción de p
 ┌─────────────────┐
 │  CoinGecko API  │
 └────────┬────────┘
-         │ extract.py (cada 6h)
+         │ extract.py (cada 1h)
          ▼
 ┌─────────────────┐
 │   data/raw/     │ JSON
@@ -79,7 +79,7 @@ Sistema completo de **ETL + Machine Learning** para análisis y predicción de p
 ```
     crypto-etl-pipeline/
 ├── .github/workflows/
-│   └── automated_etl_pipeline.yml    # Ejecuta ETL cada 6 horas
+│   └── automated_etl_pipeline.yml    # Ejecuta ETL cada hora
 ├── data/
 │   ├── raw/                          # JSON de CoinGecko (gitignored)
 │   └── processed/                    # Parquet transformados (gitignored)
@@ -221,7 +221,7 @@ Ver **[ML_USAGE.md](ML_USAGE.md)** para:
 
 ## ⚙️ Automatización (GitHub Actions)
 
-El pipeline se ejecuta **automáticamente cada 6 horas**:
+El pipeline se ejecuta **automáticamente cada hora**:
 
 1. ✅ Extrae datos de CoinGecko API
 2. ✅ Transforma y limpia
@@ -376,11 +376,11 @@ Ver **[Arquitecture.md](Arquitecture.md)** para:
 - [x] Sistema de predicción en tiempo real
 - [x] 62 tests automatizados
 - [x] Monitoreo de cobertura de datos
-- [x] GitHub Actions (cada 6 horas)
+- [x] GitHub Actions (cada hora)
 
 ### Próximos Pasos 🔲
 
-- [ ] Esperar acumulación de datos (2-3 semanas)
+- [ ] Esperar acumulación de datos (1 semana con datos cada hora)
 - [ ] Reentrenar modelo con más snapshots
 - [ ] Probar con otras cryptos (Ethereum, Solana)
 - [ ] Implementar cross-validation
