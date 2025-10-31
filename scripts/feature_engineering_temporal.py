@@ -143,6 +143,68 @@ def add_time_features(df):
     df['day_cos'] = np.cos(2 * np.pi * df['day_of_week'] / 7)
     return df
 
+def calculate_macd_features(df):
+    """Calcula MACD (Moving Average Convergence Divergence)"""
+    logger.info("Calculando MACD features")
+    df['macd'] = df.groupby('id')['price_ma_12h'].transform(lambda x: x) - df.groupby('id')['price_ma_24h'].transform(lambda x: x)
+    df['macd_signal'] = df.groupby('id')['macd'].transform(lambda x: x.rolling(window=9, min_periods=1).mean())
+    df['macd_histogram'] = df['macd'] - df['macd_signal']
+    return df
+
+def calculate_bollinger_bands(df):
+    """Calcula Bollinger Bands y posición relativa"""
+    logger.info("Calculando Bollinger Bands")
+    df['bb_upper'] = df['price_ma_24h'] + 2 * df['price_std_24h']
+    df['bb_lower'] = df['price_ma_24h'] - 2 * df['price_std_24h']
+    df['bb_position'] = (df['current_price'] - df['bb_lower']) / (df['bb_upper'] - df['bb_lower'] + 1e-10)
+    df['bb_position'] = df['bb_position'].clip(0, 1)
+    return df
+
+def calculate_volume_features(df):
+    """Calcula features avanzadas de volumen"""
+    logger.info("Calculando volume features avanzadas")
+    df['volume_ma_6h'] = df.groupby('id')['total_volume'].transform(lambda x: x.rolling(window=6, min_periods=1).mean())
+    df['volume_ma_24h'] = df.groupby('id')['total_volume'].transform(lambda x: x.rolling(window=24, min_periods=1).mean())
+    df['volume_ratio_6h_24h'] = df['volume_ma_6h'] / (df['volume_ma_24h'] + 1e-10)
+    return df
+
+def calculate_time_features(df):
+    """Calcula features temporales cíclicas (wrapper de add_time_features)"""
+    return add_time_features(df)
+
+def calculate_advanced_volatility(df):
+    """Calcula features avanzadas de volatilidad"""
+    logger.info("Calculando volatility features avanzadas")
+    df['tr1'] = df['high_24h'] - df['low_24h']
+    df['tr2'] = abs(df['high_24h'] - df.groupby('id')['current_price'].shift(1))
+    df['tr3'] = abs(df['low_24h'] - df.groupby('id')['current_price'].shift(1))
+    df['true_range'] = df[['tr1', 'tr2', 'tr3']].max(axis=1)
+    df = df.drop(['tr1', 'tr2', 'tr3'], axis=1)
+    
+    df['atr_14h'] = df.groupby('id')['true_range'].transform(lambda x: x.rolling(window=14, min_periods=1).mean())
+    df['volatility_ratio'] = df['price_std_24h'] / (df['price_ma_24h'] + 1e-10)
+    return df
+
+def calculate_price_acceleration(df):
+    """Calcula aceleración de precio y ROC"""
+    logger.info("Calculando price acceleration features")
+    if 'price_momentum_6h' not in df.columns:
+        df['price_momentum_6h'] = df.groupby('id')['current_price'].transform(lambda x: x.diff(6))
+    df['price_acceleration_6h'] = df.groupby('id')['price_momentum_6h'].transform(lambda x: x.diff())
+    df['roc_12h'] = ((df['current_price'] - df['price_lag_12h']) / (df['price_lag_12h'] + 1e-10)) * 100
+    return df
+
+def add_advanced_features(df):
+    """Agrega todas las features avanzadas"""
+    logger.info("Agregando features avanzadas")
+    df = calculate_macd_features(df)
+    df = calculate_bollinger_bands(df)
+    df = calculate_volume_features(df)
+    df = calculate_time_features(df)
+    df = calculate_advanced_volatility(df)
+    df = calculate_price_acceleration(df)
+    return df
+
 def validate_data_quality(df):
     logger.info("Validando calidad de datos")
     initial_count = len(df)
@@ -180,6 +242,7 @@ def generate_temporal_features():
     df = calculate_rsi_components(df)
     df = calculate_relative_features(df)
     df = add_time_features(df)
+    df = add_advanced_features(df)
     df = validate_data_quality(df)
     logger.info(f"Features generadas: {len(df.columns)} columnas totales")
     logger.info(f"Top 10 features: {df.columns[-10:].tolist()}")

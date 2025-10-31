@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 def create_target(df):
@@ -19,9 +18,37 @@ def create_target(df):
     df = df[:-1]
     return df
 
+def select_features_optimized(df):
+    """
+    Selecciona SOLO las top 12 features basadas en feature importance.
+    Evita overfitting con datos limitados.
+    
+    Args:
+        df: DataFrame con todas las columnas
+    
+    Returns:
+        Tuple (lista de features, nombre de target)
+    """
+    feature_cols = [
+        'bb_position',
+        'volatility_24h',
+        'price_acceleration_6h',
+        'volume_ratio_6h_24h',
+        'price_lag_1h',
+        'roc_12h',
+        'price_ma_12h',
+        'price_lag_3h',
+        'macd_histogram',
+        'price_lag_6h',
+        'price_ma_24h',
+        'rsi_14h'
+    ]
+    available_features = [col for col in feature_cols if col in df.columns]
+    return available_features, 'target'
+
 def select_features(df):
     """
-    Selecciona features relevantes para el modelo.
+    Selecciona features relevantes para el modelo (versión original con 21).
     
     Args:
         df: DataFrame con todas las columnas

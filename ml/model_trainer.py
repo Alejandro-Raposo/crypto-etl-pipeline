@@ -74,6 +74,22 @@ def save_model(model, model_name):
         pickle.dump(model, f)
     return str(filepath)
 
+def train_naive_bayes(X_train, y_train):
+    """
+    Entrena modelo Naive Bayes para clasificación binaria.
+    
+    Args:
+        X_train: Features de entrenamiento
+        y_train: Target de entrenamiento
+    
+    Returns:
+        Modelo Naive Bayes entrenado
+    """
+    from sklearn.naive_bayes import GaussianNB
+    model = GaussianNB()
+    model.fit(X_train, y_train)
+    return model
+
 def load_model(model_path):
     """
     Carga modelo desde disco.

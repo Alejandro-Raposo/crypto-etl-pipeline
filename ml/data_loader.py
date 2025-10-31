@@ -55,7 +55,18 @@ def load_crypto_data(crypto_id, days=7):
         rsi_14h,
         rsi_24h,
         volatility_24h,
-        price_momentum_6h
+        price_momentum_6h,
+        macd,
+        macd_signal,
+        macd_histogram,
+        bb_upper,
+        bb_lower,
+        bb_position,
+        volume_ratio_6h_24h,
+        atr_14h,
+        volatility_ratio,
+        price_acceleration_6h,
+        roc_12h
     FROM `{PROJECT}.{DATASET}.{TABLE}`
     WHERE id = '{crypto_id}'
       AND partition_date >= DATE_SUB(CURRENT_DATE(), INTERVAL {days} DAY)
